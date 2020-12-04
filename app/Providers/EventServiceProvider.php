@@ -1,4 +1,5 @@
 <?php
+
 namespace Crater\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -9,6 +10,10 @@ use Crater\Listeners\Updates\v1\Version110;
 use Crater\Listeners\Updates\v2\Version200;
 use Crater\Listeners\Updates\v2\Version201;
 use Crater\Listeners\Updates\v2\Version202;
+use Crater\Listeners\Updates\v2\Version210;
+use Crater\Listeners\Updates\v3\Version300;
+use Crater\Listeners\Updates\v3\Version310;
+use Crater\Listeners\Updates\v3\Version311;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -18,11 +23,15 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        UpdateFinished::class=> [
+        UpdateFinished::class => [
             Version110::class,
             Version200::class,
             Version201::class,
             Version202::class,
+            Version210::class,
+            Version300::class,
+            Version310::class,
+            Version311::class,
         ],
         Registered::class => [
             SendEmailVerificationNotification::class,

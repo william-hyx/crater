@@ -6,10 +6,9 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Database\Schema\Blueprint;
 use Crater\Listeners\Updates\Listener;
-use Crater\Listeners\Updates\v2\Version200;
 use Crater\Events\UpdateFinished;
-use Crater\Setting;
-use Crater\Address;
+use Crater\Models\Setting;
+use Crater\Models\Address;
 
 class Version200 extends Listener
 {
@@ -59,7 +58,7 @@ class Version200 extends Listener
             $table->string('city')->nullable();
         });
 
-        $addresses = \Crater\Address::all();
+        $addresses = \Crater\Models\Address::all();
         foreach ($addresses as $add) {
             $city = \Crater\City::find($add->city_id);
             if($city) {

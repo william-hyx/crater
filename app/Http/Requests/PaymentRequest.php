@@ -1,6 +1,9 @@
 <?php
+
 namespace Crater\Http\Requests;
 
+use Crater\Models\Payment;
+use Crater\Rules\UniqueNumber;
 use Illuminate\Foundation\Http\FormRequest;
 
 class PaymentRequest extends FormRequest
@@ -23,14 +26,35 @@ class PaymentRequest extends FormRequest
     public function rules()
     {
         $rules = [
-            'payment_date' => 'required',
-            'payment_number' => 'required|unique:payments,payment_number',
-            'user_id' => 'required',
-            'amount' => 'required',
+            'payment_date' => [
+                'required'
+            ],
+            'user_id' => [
+                'required'
+            ],
+            'amount' => [
+                'required'
+            ],
+            'payment_number' => [
+                'required',
+                new UniqueNumber(Payment::class)
+            ],
+            'invoice_id' => [
+                'nullable',
+            ],
+            'payment_method_id' => [
+                'nullable',
+            ],
+            'notes' => [
+                'nullable',
+            ],
         ];
 
-        if ($this->getMethod() == 'PUT') {
-            $rules['payment_number'] = $rules['payment_number'].','.$this->route('payment');
+        if ($this->isMethod('PUT')) {
+            $rules['payment_number'] = [
+                'required',
+                new UniqueNumber(Payment::class, $this->route('payment')->id)
+            ];
         }
 
         return $rules;
