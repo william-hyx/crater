@@ -7,23 +7,23 @@
       <sw-page-header :title="pageTitle">
         <sw-breadcrumb slot="breadcrumbs">
           <sw-breadcrumb-item
-            to="/admin/dashboard"
             :title="$t('general.home')"
+            to="/admin/dashboard"
           />
           <sw-breadcrumb-item
-            to="/admin/invoices"
             :title="$tc('invoices.invoice', 2)"
+            to="/admin/invoices"
           />
           <sw-breadcrumb-item
             v-if="$route.name === 'invoice.edit'"
-            to="#"
             :title="$t('invoices.edit_invoice')"
+            to="#"
             active
           />
           <sw-breadcrumb-item
             v-else
-            to="#"
             :title="$t('invoices.new_invoice')"
+            to="#"
             active
           />
         </sw-breadcrumb>
@@ -32,8 +32,8 @@
           <sw-button
             v-if="$route.name === 'invoices.edit'"
             :disabled="isLoading"
-            tag-name="a"
             :href="`/invoices/pdf/${newInvoice.unique_hash}`"
+            tag-name="a"
             variant="primary-outline"
             class="mr-3"
             target="_blank"
@@ -58,9 +58,9 @@
       <!-- Select Customer & Basic Fields  -->
       <div class="grid-cols-12 gap-8 mt-6 mb-8 lg:grid">
         <customer-select
-          class="col-span-5 pr-0"
           :valid="$v.selectedCustomer"
           :customer-id="customerId"
+          class="col-span-5 pr-0"
         />
 
         <div
@@ -76,7 +76,7 @@
               :calendar-button="true"
               calendar-button-icon="calendar"
               class="mt-2"
-              @change="$v.newInvoice.invoice_date.$touch()"
+              @input="$v.newInvoice.invoice_date.$touch()"
             />
           </sw-input-group>
 
@@ -91,7 +91,7 @@
               :calendar-button="true"
               calendar-button-icon="calendar"
               class="mt-2"
-              @change="$v.newInvoice.due_date.$touch()"
+              @input="$v.newInvoice.due_date.$touch()"
             />
           </sw-input-group>
 
@@ -211,7 +211,7 @@
           <div class="mb-6">
             <sw-popup
               ref="notePopup"
-              class="text-sm font-semibold leading-5 text-primary-400"
+              class="z-10 text-sm font-semibold leading-5 text-primary-400"
             >
               <div slot="activator" class="float-right mt-1">
                 + {{ $t('general.insert_note') }}
@@ -227,8 +227,8 @@
           </div>
 
           <div
-            class="grid gap-x-4 gap-y-2 md:gap-x-8 md:gap-y-4 grid-col-1 md:grid-cols-2"
             v-if="customFields.length > 0"
+            class="grid gap-x-4 gap-y-2 md:gap-x-8 md:gap-y-4 grid-col-1 md:grid-cols-2"
           >
             <sw-input-group
               v-for="(field, index) in customFields"
@@ -239,7 +239,7 @@
               <component
                 :type="field.type.label"
                 :field="field"
-                :isEdit="isEdit"
+                :is-edit="isEdit"
                 :is="field.type + 'Field'"
                 :invalid-fields="invalidFields"
                 @update="setCustomFieldValue"
@@ -254,7 +254,7 @@
           >
             <sw-button
               type="button"
-              class="flex justify-center w-full text-sm lg:w-auto"
+              class="flex justify-center w-full text-sm text-black lg:w-auto hover:bg-gray-400"
               variant="gray"
               @click="openTemplateModal"
             >
@@ -315,8 +315,8 @@
                 <sw-button
                   slot="activator"
                   type="button"
-                  class="flex items-center justify-center w-12 border border-gray-300 border-solid rounded-tl-none rounded-bl-none font-base"
                   data-toggle="dropdown"
+                  size="discount"
                   aria-haspopup="true"
                   aria-expanded="false"
                   style="height: 43px"
@@ -418,8 +418,6 @@ const {
 } = require('vuelidate/lib/validators')
 
 export default {
-  mixins: [CustomFieldsMixin],
-
   components: {
     InvoiceItem,
     CustomerSelect,
@@ -431,6 +429,7 @@ export default {
     ShoppingCartIcon,
     HashtagIcon,
   },
+  mixins: [CustomFieldsMixin],
 
   data() {
     return {
@@ -558,7 +557,7 @@ export default {
         if (this.newInvoice.discount_type === 'percentage') {
           this.newInvoice.discount_val = (this.subtotal * newValue) / 100
         } else {
-          this.newInvoice.discount_val = newValue * 100
+          this.newInvoice.discount_val = Math.round(newValue * 100)
         }
 
         this.newInvoice.discount = newValue
@@ -566,23 +565,27 @@ export default {
     },
 
     totalSimpleTax() {
-      return window._.sumBy(this.newInvoice.taxes, function (tax) {
-        if (!tax.compound_tax) {
-          return tax.amount
-        }
+      return Math.round(
+        window._.sumBy(this.newInvoice.taxes, function (tax) {
+          if (!tax.compound_tax) {
+            return tax.amount
+          }
 
-        return 0
-      })
+          return 0
+        })
+      )
     },
 
     totalCompoundTax() {
-      return window._.sumBy(this.newInvoice.taxes, function (tax) {
-        if (tax.compound_tax) {
-          return tax.amount
-        }
+      return Math.round(
+        window._.sumBy(this.newInvoice.taxes, function (tax) {
+          if (tax.compound_tax) {
+            return tax.amount
+          }
 
-        return 0
-      })
+          return 0
+        })
+      )
     },
 
     totalTax() {
@@ -590,9 +593,11 @@ export default {
         return this.totalSimpleTax + this.totalCompoundTax
       }
 
-      return window._.sumBy(this.newInvoice.items, function (tax) {
-        return tax.tax
-      })
+      return Math.round(
+        window._.sumBy(this.newInvoice.items, function (tax) {
+          return tax.tax
+        })
+      )
     },
 
     allTaxes() {
@@ -722,7 +727,7 @@ export default {
         return
       }
 
-      this.newInvoice.discount_val = this.newInvoice.discount * 100
+      this.newInvoice.discount_val = Math.round(this.newInvoice.discount * 100)
       this.newInvoice.discount_type = 'fixed'
     },
 
@@ -952,12 +957,15 @@ export default {
       let amount = 0
 
       if (selectedTax.compound_tax && this.subtotalWithDiscount) {
-        amount =
+        amount = Math.round(
           ((this.subtotalWithDiscount + this.totalSimpleTax) *
             selectedTax.percent) /
-          100
+            100
+        )
       } else if (this.subtotalWithDiscount && selectedTax.percent) {
-        amount = (this.subtotalWithDiscount * selectedTax.percent) / 100
+        amount = Math.round(
+          (this.subtotalWithDiscount * selectedTax.percent) / 100
+        )
       }
 
       this.newInvoice.taxes.push({

@@ -185,7 +185,6 @@
 
 
         .total-display-table {
-            box-sizing: border-box;
             page-break-inside: avoid;
             page-break-before: auto;
             page-break-after: auto;
@@ -314,7 +313,7 @@
                         <h1 class="header-logo"> {{$invoice->user->company->name}} </h1>
                     @endif
                 </td>
-                <td width="50%" class="company-address-container company-address">
+                <td width="50%" class="company-address-container company-address text-right">
                     {!! $company_address !!}
                 </td>
             </tr>

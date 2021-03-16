@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Payment</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
     <style type="text/css">
         /* -- Base -- */
@@ -15,13 +16,14 @@
             padding: 0px;
             margin-top: 50px;
         }
+
         table {
             border-collapse: collapse;
         }
 
         hr {
-           color: rgba(0, 0, 0, 0.2);
-           border: 0.5px solid #EAF1FB;
+            color: rgba(0, 0, 0, 0.2);
+            border: 0.5px solid #EAF1FB;
         }
 
         /* -- Heeader -- */
@@ -51,12 +53,14 @@
             color: #817AE3;
             padding-top: 0px;
         }
+
         .company-address-container {
             width: 50%;
             text-transform: capitalize;
             padding-left: 80px;
             margin-bottom: 2px;
         }
+
         /* .header-section-right {
             display:inline-block;
             position: absolute;
@@ -64,6 +68,10 @@
             padding: 15px 30px 15px 0px;
             float: right;
         } */
+
+        .header-section-right {
+            text-align: right;
+        }
 
         .header {
             font-size: 20px;
@@ -73,7 +81,7 @@
         /* -- Company Address -- */
 
         .company-details h1 {
-            margin:0;
+            margin: 0;
 
             font-weight: bold;
             font-size: 15px;
@@ -83,8 +91,8 @@
             max-width: 220px;
         }
 
-        .company-address{
-             /* margin-top: 12px; */
+        .company-address {
+            /* margin-top: 12px; */
             font-size: 12px;
             line-height: 15px;
             color: #595959;
@@ -92,8 +100,8 @@
         }
 
         .content-wrapper {
-           display: block;
-           height: 200px;
+            display: block;
+            height: 200px;
         }
 
         .main-content {
@@ -104,8 +112,8 @@
         /* -- Customer Address -- */
         .customer-address-container {
             display: block;
-            float:left;
-            width:40%;
+            float: left;
+            width: 40%;
             padding: 0 0 0 30px;
         }
 
@@ -163,7 +171,7 @@
             font-size: 10px;
             line-height: 15px;
             color: #595959;
-            margin:0px;
+            margin: 0px;
             width: 180px;
             word-wrap: break-word;
         }
@@ -222,11 +230,11 @@
 
         p {
             padding: 0 0 0 0;
-            margin:  0 0 0 0;
+            margin: 0 0 0 0;
         }
 
         .content-heading span {
-            font-weight: 400;
+            font-weight: normal;
             font-size: 14px;
             line-height: 25px;
             padding-bottom: 5px;
@@ -248,15 +256,15 @@
 
         .total-display-label {
             display: inline;
-            font-weight: 600;
+            font-weight: bold;
             font-size: 14px;
             line-height: 21px;
             color: #595959;
         }
 
-        .total-display-box span {
+        .total-display-box .amount {
             float: right;
-            font-weight: 500;
+            font-weight: bold;
             font-size: 14px;
             line-height: 21px;
             text-align: right;
@@ -264,21 +272,22 @@
         }
     </style>
 </head>
+
 <body>
     <div class="header-container">
         <table width="100%">
             <tr>
                 @if($logo)
-                    <td  width="50%" class="header-section-left">
-                        <img class="header-logo" src="{{ $logo }}" alt="Company Logo">
-                @else
+                <td width="50%" class="header-section-left">
+                    <img class="header-logo" src="{{ $logo }}" alt="Company Logo">
+                    @else
                     @if($payment->user->company)
-                    <td class="header-section-left" style="padding-top:0px;">
-                        <h1 class="header-logo"> {{$payment->user->company->name}} </h1>
+                <td class="header-section-left" style="padding-top:0px;">
+                    <h1 class="header-logo"> {{$payment->user->company->name}} </h1>
                     @endif
-                @endif
+                    @endif
                 </td>
-                <td  width="50%" class="header-section-right company-details company-address">
+                <td width="50%" class="header-section-right company-details company-address">
                     {!! $company_address !!}
                 </td>
             </tr>
@@ -296,8 +305,8 @@
             <div class="customer-address-container">
                 <div class="billing-address-container billing-address">
                     @if($billing_address)
-                        @lang('pdf_received_from')
-                        {!! $billing_address !!}
+                    @lang('pdf_received_from')
+                    {!! $billing_address !!}
                     @endif
                 </div>
                 <div class="billing-address-container--right">
@@ -320,10 +329,10 @@
                         <td class="attribute-value"> &nbsp;{{$payment->paymentMethod ? $payment->paymentMethod->name : '-'}}</td>
                     </tr>
                     @if ($payment->invoice && $payment->invoice->invoice_number)
-                        <tr>
-                            <td class="attribute-label">@lang('pdf_invoice_label')</td>
-                            <td class="attribute-value"> &nbsp;{{$payment->invoice->invoice_number}}</td>
-                        </tr>
+                    <tr>
+                        <td class="attribute-label">@lang('pdf_invoice_label')</td>
+                        <td class="attribute-value"> &nbsp;{{$payment->invoice->invoice_number}}</td>
+                    </tr>
                     @endif
                 </table>
             </div>
@@ -332,7 +341,8 @@
     </div>
     <div class="total-display-box">
         <p class="total-display-label">@lang('pdf_payment_amount_received_label')</p>
-        <span>{!! format_money_pdf($payment->amount, $payment->user->currency) !!}</span>
+        <span class="amount">{!! format_money_pdf($payment->amount, $payment->user->currency) !!}</span>
     </div>
 </body>
+
 </html>

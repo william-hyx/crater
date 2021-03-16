@@ -28,7 +28,7 @@
             :calendar-button="true"
             calendar-button-icon="calendar"
             class="mt-2"
-            @change="$v.formData.from_date.$touch()"
+            @input="$v.formData.from_date.$touch()"
           />
         </sw-input-group>
 
@@ -43,7 +43,7 @@
             :calendar-button="true"
             calendar-button-icon="calendar"
             class="mt-2"
-            @change="$v.formData.to_date.$touch()"
+            @input="$v.formData.to_date.$touch()"
           />
         </sw-input-group>
       </div>
@@ -61,7 +61,7 @@
         class="hidden w-full h-screen border-gray-100 border-solid rounded md:flex"
       />
       <a
-        class="flex items-center justify-center h-10 px-5 py-1 text-sm font-medium leading-none text-center text-white whitespace-no-wrap rounded md:hidden bg-primary-500"
+        class="flex items-center justify-center h-10 px-5 py-1 text-sm font-medium leading-none text-center text-white whitespace-nowrap rounded md:hidden bg-primary-500"
         @click="viewReportsPDF"
       >
         <document-text-icon />
@@ -151,21 +151,28 @@ export default {
         return this.$t('validation.required')
       }
     },
+
+    dateRangeUrl() {
+      return `${this.siteURL}?from_date=${moment(
+        this.formData.from_date
+      ).format('YYYY-MM-DD')}&to_date=${moment(this.formData.to_date).format(
+        'YYYY-MM-DD'
+      )}`
+    },
   },
+
   watch: {
     range(newRange) {
       this.formData.from_date = moment(newRange).startOf('year').toString()
       this.formData.to_date = moment(newRange).endOf('year').toString()
     },
   },
+
   mounted() {
     this.siteURL = `/reports/tax-summary/${this.getSelectedCompany.unique_hash}`
-    this.url = `${this.siteURL}?from_date=${moment(
-      this.formData.from_date
-    ).format('YYYY-MM-DD')}&to_date=${moment(this.formData.to_date).format(
-      'YYYY-MM-DD'
-    )}`
+    this.url = this.dateRangeUrl
   },
+
   methods: {
     getThisDate(type, time) {
       return moment()[type](time).toString()
@@ -240,7 +247,7 @@ export default {
         return false
       }
 
-      this.url = `${this.siteURL}?from_date=${this.formData.from_date}&to_date=${this.formData.to_date}`
+      this.url = this.dateRangeUrl
       return true
     },
     downloadReport() {
@@ -251,7 +258,7 @@ export default {
       window.open(this.url + '&download=true')
 
       setTimeout(() => {
-        this.url = `${this.siteURL}?from_date=${this.formData.from_date}&to_date=${this.formData.to_date}`
+        this.url = this.dateRangeUrl
       }, 200)
     },
   },

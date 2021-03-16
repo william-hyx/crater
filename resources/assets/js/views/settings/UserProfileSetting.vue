@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="updateUserData" class="relative h-full">
+  <form class="relative h-full" @submit.prevent="updateUserData">
     <base-loader v-if="isRequestOnGoing" :show-bg-overlay="true" />
     <sw-card variant="setting-card">
       <template slot="header">
@@ -17,7 +17,7 @@
       <div class="grid mb-4 md:grid-cols-6">
         <div>
           <label
-            class="text-sm not-italic font-medium leading-4 text-black whitespace-no-wrap"
+            class="text-sm not-italic font-medium leading-4 text-black whitespace-nowrap"
           >
             {{ $tc('settings.account_settings.profile_picture') }}
           </label>
@@ -114,9 +114,9 @@
       </div>
 
       <sw-button
-        class="mt-6"
         :loading="isLoading"
         :disabled="isLoading"
+        class="mt-6"
         variant="primary"
       >
         <save-icon v-if="!isLoading" class="mr-2 -ml-1" />
@@ -313,59 +313,53 @@ export default {
         name: this.formData.name,
         email: this.formData.email,
       }
-
-      if (
-        this.formData.password != null &&
-        this.formData.password !== undefined &&
-        this.formData.password !== ''
-      ) {
-        data = { ...data, password: this.formData.password }
-      }
-
-      let response = await this.updateCurrentUser(data)
-
-      let languageData = {
-        settings: {
-          language: this.language.code,
-        },
-      }
-
-      let languageRes = await this.updateUserSettings(languageData)
-
-      // if(languageRes) {
-      //   window.i18n.locale = this.language.code
-      // }
-
-      if (response.data.success) {
-        this.isLoading = false
-
-        if (this.fileObject && this.previewAvatar) {
-          let avatarData = new FormData()
-
-          avatarData.append(
-            'admin_avatar',
-            JSON.stringify({
-              name: this.fileObject.name,
-              data: this.previewAvatar,
-            })
-          )
-          this.uploadAvatar(avatarData)
+      try {
+        if (
+          this.formData.password != null &&
+          this.formData.password !== undefined &&
+          this.formData.password !== ''
+        ) {
+          data = { ...data, password: this.formData.password }
         }
 
-        window.toastr['success'](
-          this.$t('settings.account_settings.updated_message')
-        )
+        let response = await this.updateCurrentUser(data)
 
-        this.formData.password = ''
-        this.formData.confirm_password = ''
+        let languageData = {
+          settings: {
+            language: this.language.code,
+          },
+        }
+
+        let languageRes = await this.updateUserSettings(languageData)
+
+        if (response.data.success) {
+          this.isLoading = false
+
+          if (this.fileObject && this.previewAvatar) {
+            let avatarData = new FormData()
+
+            avatarData.append(
+              'admin_avatar',
+              JSON.stringify({
+                name: this.fileObject.name,
+                data: this.previewAvatar,
+              })
+            )
+
+            this.uploadAvatar(avatarData)
+          }
+
+          window.toastr['success'](
+            this.$t('settings.account_settings.updated_message')
+          )
+
+          this.formData.password = ''
+          this.formData.confirm_password = ''
+        }
+      } catch (error) {
+        this.isLoading = false
         return true
       }
-
-      window.toastr['error'](response.data.error)
-
-      this.isLoading = false
-
-      return true
     },
   },
 }

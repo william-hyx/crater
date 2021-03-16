@@ -39,9 +39,7 @@ class Invoice extends Model implements HasMedia
     protected $dates = [
         'created_at',
         'updated_at',
-        'deleted_at',
-        'invoice_date',
-        'due_date'
+        'deleted_at'
     ];
 
     protected $casts = [
@@ -81,7 +79,7 @@ class Invoice extends Model implements HasMedia
     {
         // Get the last created order
         $lastOrder = Invoice::where('invoice_number', 'LIKE', $value . '-%')
-            ->orderBy('created_at', 'desc')
+            ->orderBy('invoice_number', 'desc')
             ->first();
 
 
@@ -363,11 +361,11 @@ class Invoice extends Model implements HasMedia
         }
 
         $invoice = Invoice::with([
-                'items',
-                'user',
-                'invoiceTemplate',
-                'taxes'
-            ])
+            'items',
+            'user',
+            'invoiceTemplate',
+            'taxes'
+        ])
             ->find($invoice->id);
 
         return $invoice;
@@ -512,11 +510,7 @@ class Invoice extends Model implements HasMedia
 
         $company = Company::find($this->company_id);
 
-        $logo = $company->getMedia('logo')->first();
-
-        if ($logo) {
-            $logo = $logo->getFullUrl();
-        }
+        $logo = $company->logo_path;
 
         view()->share([
             'invoice' => $this,

@@ -85,9 +85,10 @@
                       slot="activator"
                       type="button"
                       data-toggle="dropdown"
+                      size="discount"
                       aria-haspopup="true"
                       aria-expanded="false"
-                      style="height: 43px; padding: 6px"
+                      style="height: 43px"
                       variant="white"
                     >
                       <span class="flex">
@@ -256,7 +257,7 @@ export default {
         if (this.item.discount_type === 'percentage') {
           this.item.discount_val = (this.subtotal * newValue) / 100
         } else {
-          this.item.discount_val = newValue * 100
+          this.item.discount_val = Math.round(newValue * 100)
         }
 
         this.item.discount = newValue
@@ -266,22 +267,26 @@ export default {
       return this.subtotal - this.item.discount_val
     },
     totalSimpleTax() {
-      return window._.sumBy(this.item.taxes, function (tax) {
-        if (!tax.compound_tax) {
-          return tax.amount
-        }
+      return Math.round(
+        window._.sumBy(this.item.taxes, function (tax) {
+          if (!tax.compound_tax) {
+            return tax.amount
+          }
 
-        return 0
-      })
+          return 0
+        })
+      )
     },
     totalCompoundTax() {
-      return window._.sumBy(this.item.taxes, function (tax) {
-        if (tax.compound_tax) {
-          return tax.amount
-        }
+      return Math.round(
+        window._.sumBy(this.item.taxes, function (tax) {
+          if (tax.compound_tax) {
+            return tax.amount
+          }
 
-        return 0
-      })
+          return 0
+        })
+      )
     },
     totalTax() {
       return this.totalSimpleTax + this.totalCompoundTax
@@ -296,7 +301,7 @@ export default {
       },
       set: function (newValue) {
         if (parseFloat(newValue) > 0) {
-          this.item.price = newValue * 100
+          this.item.price = Math.round(newValue * 100)
           this.maxDiscount = this.item.price
         } else {
           this.item.price = newValue
@@ -340,7 +345,7 @@ export default {
           between: between(0, this.maxDiscount),
         },
         description: {
-          maxLength: maxLength(255),
+          maxLength: maxLength(65000),
         },
       },
     }
@@ -411,7 +416,7 @@ export default {
         return
       }
 
-      this.item.discount_val = this.item.discount * 100
+      this.item.discount_val = Math.round(this.item.discount * 100)
       this.item.discount_type = 'fixed'
     },
     selectPercentage() {

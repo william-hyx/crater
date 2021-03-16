@@ -33,9 +33,7 @@ class Estimate extends Model implements HasMedia
     protected $dates = [
         'created_at',
         'updated_at',
-        'deleted_at',
-        'estimate_date',
-        'expiry_date'
+        'deleted_at'
     ];
 
     protected $appends = [
@@ -77,7 +75,7 @@ class Estimate extends Model implements HasMedia
     {
         // Get the last created order
         $lastOrder = Estimate::where('estimate_number', 'LIKE', $value . '-%')
-            ->orderBy('created_at', 'desc')
+            ->orderBy('estimate_number', 'desc')
             ->first();
 
         if (!$lastOrder) {
@@ -428,11 +426,7 @@ class Estimate extends Model implements HasMedia
         $estimateTemplate = EstimateTemplate::find($this->estimate_template_id);
 
         $company = Company::find($this->company_id);
-        $logo = $company->getMedia('logo')->first();
-
-        if ($logo) {
-            $logo = $logo->getFullUrl();
-        }
+        $logo = $company->logo_path;
 
         view()->share([
             'estimate' => $this,

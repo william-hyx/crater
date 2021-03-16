@@ -256,7 +256,6 @@
         }
 
         .total-display-table {
-            box-sizing: border-box;
             page-break-inside: avoid;
             page-break-before: auto;
             page-break-after: auto;
@@ -273,7 +272,7 @@
         }
 
         .total-table-attribute-value {
-            font-weight: 500;
+            font-weight: bold;
             text-align: right;
             font-size: 12px;
             color: #040405;
